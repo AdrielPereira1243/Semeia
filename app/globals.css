@@ -1,42 +1,115 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: hsl(34 28% 90%);
+  --foreground: hsl(214 16% 20%);
+  --card: hsl(45 32% 94%);
+  --card-foreground: hsl(216 16% 20%);
+  --popover: hsl(45 95% 96%);
+  --popover-foreground: hsl(216 16% 20%);
+  --primary: hsl(18 74% 52%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(30 80% 70%);
+  --secondary-foreground: hsl(216 16% 20%);
+  --muted: hsl(38 16% 88%);
+  --muted-foreground: hsl(216 18% 48%);
+  --accent: hsl(24 82% 59%);
+  --accent-foreground: hsl(0 0% 100%);
+  --destructive: hsl(358 80% 58%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: hsl(34 18% 76%);
+  --input: hsl(45 100% 95%);
+  --ring: hsl(24 90% 60%);
+  --app-font-sans: ui-sans-serif, system-ui, sans-serif;
+  --app-font-mono: ui-monospace, SFMono-Regular, monospace;
+}
+
+.dark {
+  --background: hsl(217 18% 12%);
+  --foreground: hsl(0 0% 97%);
+  --card: hsl(217 25% 17%);
+  --card-foreground: hsl(0 0% 97%);
+  --popover: hsl(217 25% 17%);
+  --popover-foreground: hsl(0 0% 97%);
+  --primary: hsl(24 95% 63%);
+  --primary-foreground: hsl(217 18% 12%);
+  --secondary: hsl(38 90% 52%);
+  --secondary-foreground: hsl(217 18% 96%);
+  --muted: hsl(217 17% 18%);
+  --muted-foreground: hsl(210 15% 70%);
+  --accent: hsl(20 92% 60%);
+  --accent-foreground: hsl(217 18% 12%);
+  --destructive: hsl(359 80% 66%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: hsl(217 18% 24%);
+  --input: hsl(217 25% 14%);
+  --ring: hsl(22 92% 68%);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --font-sans: var(--app-font-sans);
+  --font-mono: var(--app-font-mono);
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
+  background-image:
+    radial-gradient(
+      circle at top left,
+      hsla(44 100% 92% / 0.55),
+      transparent 26%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      hsla(20 100% 80% / 0.18),
+      transparent 26%
+    );
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--app-font-sans);
 }
 
-/* ---- Inputs de data/mes (calendário) ---- */
+.dark body {
+  background-image:
+    radial-gradient(
+      circle at top left,
+      hsla(34 100% 80% / 0.16),
+      transparent 22%
+    ),
+    radial-gradient(
+      circle at bottom right,
+      hsla(22 100% 72% / 0.12),
+      transparent 24%
+    );
+}
+
 input[type="date"],
 input[type="month"] {
-  accent-color: #4f46e5; /* indigo-600 */
+  accent-color: hsl(222.2 47.4% 11.2%);
 }
 
-/* Chrome/Safari: deixa o ícone do calendário mais "bonito" e coerente com o tema */
 input[type="date"]::-webkit-calendar-picker-indicator,
 input[type="month"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
-  opacity: 0.8;
-  filter: saturate(1.2);
+  opacity: 0.85;
 }
 
 input[type="date"]:hover::-webkit-calendar-picker-indicator,
@@ -44,20 +117,12 @@ input[type="month"]:hover::-webkit-calendar-picker-indicator {
   opacity: 1;
 }
 
-/* ---- Inputs numéricos (horas) sem setas/spinners ---- */
 input[type="number"] {
   appearance: textfield;
 }
+
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
-}
-
-@media (prefers-color-scheme: dark) {
-  input[type="date"]::-webkit-calendar-picker-indicator,
-  input[type="month"]::-webkit-calendar-picker-indicator {
-    opacity: 0.9;
-    filter: invert(1) opacity(0.9) saturate(1.2);
-  }
 }

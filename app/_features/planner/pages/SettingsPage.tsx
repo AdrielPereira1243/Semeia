@@ -2,51 +2,121 @@
 
 import { AppShell } from "../../../_components/AppShell";
 import { PIONEER_GOALS, type PioneerType, formatHours } from "../model";
-import { UI_CARD, UI_INPUT } from "../ui";
 import { usePlannerData } from "../usePlannerData";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { User, HardDrive, Info, Trash2 } from "lucide-react";
 
 export function SettingsPage() {
   const data = usePlannerData();
+
   return (
     <AppShell>
-      <div className="grid max-w-xl gap-6">
+      <div className="grid max-w-2xl gap-6">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Configuracoes</h1>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            Defina seu tipo de pioneiro e acompanhe meta mensal.
+          <p className="mt-1 text-sm text-muted-foreground">
+            Defina seu tipo de pioneiro e acompanhe a meta mensal
           </p>
         </div>
-        <div className={UI_CARD}>
-          <h2 className="text-sm font-semibold">Tipo de pioneiro</h2>
-          <select
-            value={data.pioneerType}
-            onChange={(e) => data.setPioneerType(e.target.value as PioneerType)}
-            className={`mt-3 w-full ${UI_INPUT}`}
-          >
-            <option value="pioneiro auxiliar 15h">Pioneiro auxiliar - 15 horas</option>
-            <option value="pioneiro auxiliar 30h">Pioneiro auxiliar - 30 horas</option>
-            <option value="pioneiro regular">Pioneiro regular - 50 horas</option>
-            <option value="especial">Especial - 100 horas</option>
-          </select>
-          <p className="mt-2 text-xs text-zinc-500">
-            Meta atual: {formatHours(PIONEER_GOALS[data.pioneerType])} por mes.
-          </p>
-        </div>
-        <div className={UI_CARD}>
-          <h2 className="text-sm font-semibold">Dados locais</h2>
-          <p className="mt-1 text-sm text-zinc-500">
-            Seus dados ficam salvos no navegador deste dispositivo.
-          </p>
-          <button
-            type="button"
-            onClick={() => data.clearAll()}
-            className="mt-4 rounded-xl border border-red-300 px-4 py-2 text-sm font-medium text-red-700 transition hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/30"
-          >
-            Limpar todos os dados
-          </button>
-        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <User className="size-4" /> Tipo de Pioneiro
+            </CardTitle>
+            <CardDescription>
+              Selecione sua modalidade de servico para ajustar a meta mensal de horas.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Select
+              value={data.pioneerType}
+              onValueChange={(value) => data.setPioneerType(value as PioneerType)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pioneiro auxiliar 15h">
+                  Pioneiro auxiliar - 15 horas
+                </SelectItem>
+                <SelectItem value="pioneiro auxiliar 30h">
+                  Pioneiro auxiliar - 30 horas
+                </SelectItem>
+                <SelectItem value="pioneiro regular">
+                  Pioneiro regular - 50 horas
+                </SelectItem>
+                <SelectItem value="especial">Especial - 100 horas</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <p className="text-sm text-muted-foreground">
+              Meta atual:{" "}
+              <span className="font-semibold text-foreground">
+                {formatHours(PIONEER_GOALS[data.pioneerType])}
+              </span>{" "}
+              por mes
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <HardDrive className="size-4" /> Dados Locais
+            </CardTitle>
+            <CardDescription>
+              Seus dados ficam salvos no navegador deste dispositivo.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                const ok = window.confirm(
+                  "Tem certeza? Esta acao vai deletar todos os seus dados."
+                );
+                if (ok) {
+                  data.clearAll();
+                }
+              }}
+              className="gap-2"
+            >
+              <Trash2 className="size-4" /> Limpar todos os dados
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Info className="size-4" /> Sobre o Aplicativo
+            </CardTitle>
+            <CardDescription>
+              Service Report - Gerenciador moderno de horas de atividades
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-xs text-muted-foreground">
+              Desenvolvido com carinho por Adriel Pereira
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </AppShell>
   );
 }
-

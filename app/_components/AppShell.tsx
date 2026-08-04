@@ -1,67 +1,68 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-
-function NavLink({
-  href,
-  label,
-}: {
-  href: string;
-  label: string;
-}) {
-  const pathname = usePathname();
-  const isActive = pathname === href;
-
-  return (
-    <Link
-      href={href}
-      className={[
-        "rounded-full px-4 py-2 text-sm font-medium transition-colors",
-        isActive
-          ? "bg-indigo-600 text-white shadow-sm"
-          : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-900/60",
-      ].join(" ")}
-    >
-      {label}
-    </Link>
-  );
-}
+import NavLink from "./NavLink";
+import { Calendar, History, Users, Settings, BarChart3 } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-dvh flex flex-col">
-      <header className="sticky top-0 z-10 border-b border-zinc-200/70 bg-zinc-50/80 backdrop-blur dark:border-zinc-800/80 dark:bg-zinc-950/70">
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6">
-          <div className="flex items-center gap-3">
-            <div className="grid size-9 place-items-center rounded-xl bg-indigo-600 text-white shadow-sm">
-              SR
+    <div className="min-h-dvh flex flex-col bg-background text-foreground">
+      <header className="sticky top-0 z-40 border-b border-border/60 bg-background/90 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
+          <Link href="/" className="flex items-center gap-3">
+            <div className="grid h-11 w-11 place-items-center rounded-3xl border border-border/60 bg-muted/60 shadow-sm shadow-slate-900/5">
+              <BarChart3 className="size-5 text-primary" />
             </div>
             <div className="leading-tight">
-              <div className="text-sm font-semibold">Service Report</div>
-              <div className="text-xs text-zinc-600 dark:text-zinc-400">
-                Relatorio de servico de campo
+              <div className="text-sm font-semibold tracking-tight text-foreground">
+                Service Report
+              </div>
+              <div className="text-xs text-muted-foreground">
+                Gerenciador de horas
               </div>
             </div>
-          </div>
+          </Link>
 
-          <nav className="-mx-2 flex max-w-full items-center gap-2 overflow-x-auto px-2 [-webkit-overflow-scrolling:touch] sm:mx-0 sm:justify-end sm:px-0">
-            <NavLink href="/" label="Mês" />
-            <NavLink href="/history" label="Historico" />
-            <NavLink href="/contacts" label="Pessoas" />
-            <NavLink href="/settings" label="Configurações" />
+          <nav className="flex flex-wrap items-center gap-2 overflow-x-auto pb-1 [-webkit-overflow-scrolling:touch]">
+            <NavLink
+              href="/"
+              label="Mes"
+              icon={<Calendar className="size-4" />}
+            />
+            <NavLink
+              href="/history"
+              label="Historico"
+              icon={<History className="size-4" />}
+            />
+            <NavLink
+              href="/contacts"
+              label="Pessoas"
+              icon={<Users className="size-4" />}
+            />
+            <NavLink
+              href="/settings"
+              label="Configuracoes"
+              icon={<Settings className="size-4" />}
+            />
           </nav>
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">
+      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 sm:py-8">
         {children}
       </main>
 
-      <footer className="border-t border-zinc-200/70 py-6 text-center text-xs text-zinc-500 dark:border-zinc-800/80 dark:text-zinc-400">
-        Feito para registrar horas mensais.
+      <footer className="border-t">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-6 text-center sm:px-6">
+          <Separator />
+          <p className="text-xs text-muted-foreground">
+            Desenvolvido por Adriel Pereira
+          </p>
+        </div>
       </footer>
     </div>
   );
 }
 
+export default AppShell;

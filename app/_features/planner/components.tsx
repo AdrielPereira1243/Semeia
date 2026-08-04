@@ -3,36 +3,12 @@
 import { useMemo, useState } from "react";
 import type { ActivityType, Contact, Entry } from "./model";
 import { ACTIVITY_TYPES, isContactActivity } from "./model";
-
-export function Card({
-  label,
-  value,
-  tone = "default",
-  className,
-}: {
-  label: string;
-  value: string;
-  tone?: "default" | "ok" | "warn";
-  className?: string;
-}) {
-  const toneClass =
-    tone === "warn"
-      ? "text-amber-600 dark:text-amber-400"
-      : tone === "ok"
-        ? "text-emerald-600 dark:text-emerald-400"
-        : "";
-  return (
-    <div
-      className={[
-        "rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900/40",
-        className ?? "",
-      ].join(" ")}
-    >
-      <div className="text-xs text-zinc-500">{label}</div>
-      <div className={`mt-2 text-2xl font-semibold ${toneClass}`}>{value}</div>
-    </div>
-  );
-}
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Edit, User, X, Check } from "lucide-react";
 
 export function EditEntryForm({
   entry,
@@ -57,70 +33,91 @@ export function EditEntryForm({
   }, [activityType, contacts]);
 
   return (
-    <div className="grid gap-2 rounded-lg border border-zinc-200 bg-white p-3 shadow-sm dark:border-zinc-700 dark:bg-zinc-950/60">
-      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="rounded-lg border border-zinc-300 bg-white px-2 py-1.5 text-xs shadow-sm outline-none transition placeholder:text-zinc-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 dark:border-zinc-700 dark:bg-zinc-900 dark:placeholder:text-zinc-500 dark:focus:border-indigo-400 dark:focus:ring-indigo-900/40"
-        />
-        <select
-          value={activityType}
-          onChange={(e) => {
-            const next = e.target.value as ActivityType;
-            setActivityType(next);
-            setSelectedContactId("");
-          }}
-          className="rounded-lg border border-zinc-300 bg-white px-2 py-1.5 text-xs shadow-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 dark:border-zinc-700 dark:bg-zinc-900 dark:focus:border-indigo-400 dark:focus:ring-indigo-900/40"
-        >
-          {ACTIVITY_TYPES.map((a) => (
-            <option key={a} value={a}>
-              {a}
-            </option>
-          ))}
-        </select>
-        <input
-          type="number"
-          min="0"
-          step="0.5"
-          value={hours}
-          onChange={(e) => setHours(e.target.value)}
-          className="rounded-lg border border-zinc-300 bg-white px-2 py-1.5 text-xs shadow-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 dark:border-zinc-700 dark:bg-zinc-900 dark:focus:border-indigo-400 dark:focus:ring-indigo-900/40"
-        />
-        <input
-          value={details}
-          onChange={(e) => setDetails(e.target.value)}
-          className="rounded-lg border border-zinc-300 bg-white px-2 py-1.5 text-xs shadow-sm outline-none transition placeholder:text-zinc-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 dark:border-zinc-700 dark:bg-zinc-900 dark:placeholder:text-zinc-500 dark:focus:border-indigo-400 dark:focus:ring-indigo-900/40"
-          placeholder="Detalhes"
-        />
-        {isContactActivity(activityType) ? (
-          <select
-            value={selectedContactId}
-            onChange={(e) => setSelectedContactId(e.target.value)}
-            className="rounded-lg border border-zinc-300 bg-white px-2 py-1.5 text-xs shadow-sm outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 dark:border-zinc-700 dark:bg-zinc-900 dark:focus:border-indigo-400 dark:focus:ring-indigo-900/40"
-          >
-            <option value="">Selecione {activityType}</option>
-            {availableContacts.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.personName || "(sem nome)"}
-              </option>
-            ))}
-          </select>
-        ) : (
-          <div />
-        )}
+    <div className="grid gap-4 rounded-lg border bg-card p-4 shadow-sm">
+      <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        <Edit className="size-4" />
+        Editar lancamento
       </div>
-      <div className="flex justify-end gap-2">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="rounded-md border border-zinc-300 px-2 py-1 text-xs font-medium transition hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-zinc-700 dark:hover:bg-zinc-800 dark:focus:ring-indigo-900/40"
-        >
-          cancelar
-        </button>
-        <button
-          type="button"
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-2">
+          <Label>Data</Label>
+          <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="h-9 text-xs" />
+        </div>
+
+        <div className="grid gap-2">
+          <Label>Tipo</Label>
+          <Select
+            value={activityType}
+            onValueChange={(next) => {
+              setActivityType(next as ActivityType);
+              setSelectedContactId("");
+            }}
+          >
+            <SelectTrigger className="h-9 text-xs">
+              <SelectValue placeholder="Tipo" />
+            </SelectTrigger>
+            <SelectContent>
+              {ACTIVITY_TYPES.map((a) => (
+                <SelectItem key={a} value={a}>
+                  {a}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="grid gap-2">
+          <Label>Horas</Label>
+          <Input
+            type="number"
+            min="0"
+            step="0.5"
+            value={hours}
+            onChange={(e) => setHours(e.target.value)}
+            className="h-9 text-xs"
+          />
+        </div>
+
+        <div className="grid gap-2">
+          <Label>Detalhes</Label>
+          <Input
+            value={details}
+            onChange={(e) => setDetails(e.target.value)}
+            className="h-9 text-xs"
+            placeholder="Detalhes"
+          />
+        </div>
+
+        <div className="grid gap-2 lg:col-span-1">
+          <Label>Contato</Label>
+          {isContactActivity(activityType) ? (
+            <Select value={selectedContactId} onValueChange={setSelectedContactId}>
+              <SelectTrigger className="h-9 text-xs">
+                <SelectValue placeholder={`Selecione ${activityType}`} />
+              </SelectTrigger>
+              <SelectContent>
+                {availableContacts.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.personName || "(sem nome)"}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : (
+            <div className="flex h-9 items-center rounded-md border border-dashed px-3 text-xs text-muted-foreground">
+              Nao se aplica
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="flex justify-end gap-2 pt-1">
+        <Button variant="outline" size="sm" onClick={onCancel}>
+          <X className="size-3.5" /> Cancelar
+        </Button>
+        <Button
+          size="sm"
           onClick={() => {
             const n = Number(hours);
             if (!date || Number.isNaN(n) || n <= 0) return;
@@ -129,13 +126,14 @@ export function EditEntryForm({
               activityType,
               hours: n,
               details,
-              contactId: isContactActivity(activityType) ? selectedContactId || undefined : undefined,
+              contactId: isContactActivity(activityType)
+                ? selectedContactId || undefined
+                : undefined,
             });
           }}
-          className="rounded-md bg-indigo-600 px-2 py-1 text-xs font-medium text-white transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900/40"
         >
-          salvar
-        </button>
+          <Check className="size-3.5" /> Salvar
+        </Button>
       </div>
     </div>
   );
@@ -155,42 +153,51 @@ export function ContactEditor({
   const [subject, setSubject] = useState(contact.subject);
 
   return (
-    <div className="mt-3 grid gap-2 rounded-xl border border-zinc-200 bg-zinc-50 p-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-950/30">
-      <input
-        value={personName}
-        onChange={(e) => setPersonName(e.target.value)}
-        className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition placeholder:text-zinc-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 dark:border-zinc-700 dark:bg-zinc-900 dark:placeholder:text-zinc-500 dark:focus:border-indigo-400 dark:focus:ring-indigo-900/40"
-        placeholder="Nome"
-      />
-      <input
-        value={address}
-        onChange={(e) => setAddress(e.target.value)}
-        className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition placeholder:text-zinc-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 dark:border-zinc-700 dark:bg-zinc-900 dark:placeholder:text-zinc-500 dark:focus:border-indigo-400 dark:focus:ring-indigo-900/40"
-        placeholder="Endereco"
-      />
-      <textarea
-        value={subject}
-        onChange={(e) => setSubject(e.target.value)}
-        className="min-h-24 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition placeholder:text-zinc-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 dark:border-zinc-700 dark:bg-zinc-900 dark:placeholder:text-zinc-500 dark:focus:border-indigo-400 dark:focus:ring-indigo-900/40"
-        placeholder="Assunto"
-      />
+    <div className="mt-4 grid gap-4 rounded-lg border bg-muted/30 p-4">
+      <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        <User className="size-4" />
+        Editar contato
+      </div>
+
+      <div className="grid gap-2">
+        <Label htmlFor={`contact-name-${contact.id}`}>Nome</Label>
+        <Input
+          id={`contact-name-${contact.id}`}
+          value={personName}
+          onChange={(e) => setPersonName(e.target.value)}
+          placeholder="Nome"
+        />
+      </div>
+
+      <div className="grid gap-2">
+        <Label htmlFor={`contact-address-${contact.id}`}>Endereco</Label>
+        <Input
+          id={`contact-address-${contact.id}`}
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          placeholder="Endereco"
+        />
+      </div>
+
+      <div className="grid gap-2">
+        <Label htmlFor={`contact-subject-${contact.id}`}>Assunto</Label>
+        <Textarea
+          id={`contact-subject-${contact.id}`}
+          value={subject}
+          onChange={(e) => setSubject(e.target.value)}
+          placeholder="Assunto / Notas"
+          className="min-h-24"
+        />
+      </div>
+
       <div className="flex justify-end gap-2">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="rounded-lg border border-zinc-300 px-3 py-2 text-sm font-medium transition hover:bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:border-zinc-700 dark:hover:bg-zinc-800 dark:focus:ring-indigo-900/40"
-        >
-          Cancelar
-        </button>
-        <button
-          type="button"
-          onClick={() => onSave({ personName, address, subject })}
-          className="rounded-lg bg-indigo-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900/40"
-        >
-          Salvar
-        </button>
+        <Button variant="outline" size="sm" onClick={onCancel}>
+          <X className="size-3.5" /> Cancelar
+        </Button>
+        <Button size="sm" onClick={() => onSave({ personName, address, subject })}>
+          <Check className="size-3.5" /> Salvar
+        </Button>
       </div>
     </div>
   );
 }
-

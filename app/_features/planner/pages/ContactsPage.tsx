@@ -3,9 +3,20 @@
 import { useMemo, useState } from "react";
 import { AppShell } from "../../../_components/AppShell";
 import type { ContactType } from "../model";
-import { UI_BUTTON_PRIMARY, UI_CARD, UI_INPUT } from "../ui";
 import { usePlannerData } from "../usePlannerData";
 import { ContactEditor } from "../components";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Search, UserPlus, Edit2, Trash2, MapPin } from "lucide-react";
 
 export function ContactsPage() {
   const data = usePlannerData();
@@ -40,110 +51,111 @@ export function ContactsPage() {
   return (
     <AppShell>
       <div className="grid gap-6">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Pessoas</h1>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
-              Gerencie seus estudos e revisitas (nome, endereco, assunto).
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setFilter("estudo")}
-              className={[
-                "rounded-full px-3 py-1.5 text-sm font-medium transition-colors",
-                filter === "estudo"
-                  ? "bg-emerald-600 text-white"
-                  : "border border-zinc-300 text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800",
-              ].join(" ")}
-            >
-              Estudos
-            </button>
-            <button
-              type="button"
-              onClick={() => setFilter("revisita")}
-              className={[
-                "rounded-full px-3 py-1.5 text-sm font-medium transition-colors",
-                filter === "revisita"
-                  ? "bg-sky-600 text-white"
-                  : "border border-zinc-300 text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800",
-              ].join(" ")}
-            >
-              Revisitas
-            </button>
-          </div>
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Pessoas</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Gerencie seus estudos e revisitas com facilidade
+          </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar por nome, endereco ou assunto..."
-            className={`w-full md:max-w-md ${UI_INPUT}`}
-          />
-          <a href={`/follow-up?type=${filter}`} className={UI_BUTTON_PRIMARY}>
-            + Novo {filter}
-          </a>
+        <div className="grid gap-4">
+          <Tabs value={filter} onValueChange={(value) => setFilter(value as ContactType)}>
+            <TabsList>
+              <TabsTrigger value="estudo">Estudos</TabsTrigger>
+              <TabsTrigger value="revisita">Revisitas</TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Buscar por nome ou assunto..."
+                className="pl-9"
+              />
+            </div>
+            <Button asChild className="gap-2">
+              <a href={`/follow-up?type=${filter}`}>
+                <UserPlus className="size-4" /> Novo {filter}
+              </a>
+            </Button>
+          </div>
         </div>
 
         <div className="grid gap-3">
           {filtered.length === 0 ? (
-            <div className={`${UI_CARD} text-sm text-zinc-500`}>
-              Nenhum {filter} cadastrado ainda.
-            </div>
+            <Card>
+              <CardContent className="p-8 text-center text-sm text-muted-foreground">
+                Nenhum {filter} cadastrado ainda.
+              </CardContent>
+            </Card>
           ) : (
             filtered.map((c) => (
-              <div key={c.id} className={UI_CARD}>
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="text-sm font-semibold">{c.personName || "(sem nome)"}</div>
-                    <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
-                      {c.subject || "(sem assunto)"}
+              <Card key={c.id}>
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="space-y-1">
+                      <CardTitle className="text-base">{c.personName || "(sem nome)"}</CardTitle>
+                      <CardDescription>{c.subject || "Sem assunto"}</CardDescription>
+                      {c.address && (
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <MapPin className="size-3.5" />
+                          <span>{c.address}</span>
+                        </div>
+                      )}
                     </div>
-                    {c.address ? <div className="mt-1 text-xs text-zinc-500">{c.address}</div> : null}
-                    <div className="mt-2 text-xs text-zinc-500">
-                      Usado em {countUsedById.get(c.id) ?? 0} lancamento(s)
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setEditingId(editingId === c.id ? null : c.id)}
+                        title="Editar Contato"
+                      >
+                        <Edit2 className="size-4" />
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        onClick={() => {
+                          const used = countUsedById.get(c.id) ?? 0;
+                          const ok = window.confirm(
+                            used > 0
+                              ? `Remover este ${filter}? Ele esta vinculado a ${used} lancamento(s).`
+                              : `Remover este ${filter}?`
+                          );
+                          if (!ok) return;
+                          data.deleteContact(c.id);
+                          if (editingId === c.id) setEditingId(null);
+                        }}
+                        title="Remover Contato"
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setEditingId(editingId === c.id ? null : c.id)}
-                      className="rounded-full border border-zinc-300 px-3 py-1.5 text-xs font-medium transition hover:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
-                    >
-                      editar
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const used = countUsedById.get(c.id) ?? 0;
-                        const ok = window.confirm(
-                          used > 0
-                            ? `Remover este ${filter}? Ele esta vinculado a ${used} lancamento(s). Os lancamentos vao continuar, mas sem pessoa vinculada.`
-                            : `Remover este ${filter}?`,
-                        );
-                        if (!ok) return;
-                        data.deleteContact(c.id);
-                        if (editingId === c.id) setEditingId(null);
-                      }}
-                      className="rounded-full border border-red-300 px-3 py-1.5 text-xs text-red-700 hover:bg-red-50 dark:border-red-900 dark:text-red-300 dark:hover:bg-red-950/30"
-                    >
-                      remover
-                    </button>
-                  </div>
-                </div>
-                {editingId === c.id ? (
-                  <ContactEditor
-                    contact={c}
-                    onCancel={() => setEditingId(null)}
-                    onSave={(patch) => {
-                      data.updateContact(c.id, patch);
-                      setEditingId(null);
-                    }}
-                  />
-                ) : null}
-              </div>
+                </CardHeader>
+
+                <CardContent className="pt-0">
+                  <Badge variant="secondary" className="text-[10px]">
+                    Usado em {countUsedById.get(c.id) ?? 0} lancamento(s)
+                  </Badge>
+
+                  {editingId === c.id && (
+                    <div className="mt-4">
+                      <ContactEditor
+                        contact={c}
+                        onCancel={() => setEditingId(null)}
+                        onSave={(patch) => {
+                          data.updateContact(c.id, patch);
+                          setEditingId(null);
+                        }}
+                      />
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             ))
           )}
         </div>
@@ -151,4 +163,3 @@ export function ContactsPage() {
     </AppShell>
   );
 }
-
