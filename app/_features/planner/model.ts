@@ -31,14 +31,6 @@ export type Entry = {
   contactId?: string;
 };
 
-export type AppData = {
-  pioneerType: PioneerType;
-  contacts?: Contact[];
-  entries: Entry[];
-};
-
-export const STORAGE_KEY = "service-report-data-v1"; // legacy (migração)
-export const SQLITE_APPDATA_KEY = "appDataJson.v1";
 export const ENTRY_DRAFT_KEY = "service-report-entry-draft-v1";
 
 export const ACTIVITY_TYPES: ActivityType[] = [
@@ -57,12 +49,19 @@ export const PIONEER_GOALS: Record<PioneerType, number> = {
   especial: 100,
 };
 
+function toLocalIsoDate(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 export function getTodayIso() {
-  return new Date().toISOString().slice(0, 10);
+  return toLocalIsoDate(new Date());
 }
 
 export function getCurrentMonth() {
-  return new Date().toISOString().slice(0, 7);
+  return toLocalIsoDate(new Date()).slice(0, 7);
 }
 
 export function formatHours(v: number) {
@@ -82,15 +81,4 @@ export function isContactType(x: unknown): x is ContactType {
 export function isContactActivity(a: ActivityType): a is ContactType {
   return a === "revisita" || a === "estudo";
 }
-
-export type LegacyFollowUpInfo = {
-  personName?: unknown;
-  address?: unknown;
-  subject?: unknown;
-};
-
-export type LegacyEntry = Entry & {
-  followUpType?: unknown;
-  followUpInfo?: unknown;
-};
 

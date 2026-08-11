@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AppShell } from "../../../_components/AppShell";
 import { toCsv, saveCsv } from "../csv";
 import {
   ACTIVITY_TYPES,
@@ -16,7 +15,7 @@ import {
 } from "../model";
 import { MetricsCard } from "../components/MetricsCard";
 import { YearlyStatusCard } from "../components/YearlyStatusCard";
-import { EditEntryForm } from "../components";
+import { EditEntryForm } from "../components/EntryEditors";
 import { ENTRY_DRAFT_KEY } from "../model";
 import { usePlannerData } from "../usePlannerData";
 
@@ -66,7 +65,7 @@ const ACTIVITY_CONFIG: Record<
     text: "text-blue-700 dark:text-blue-300",
     border: "border-blue-200/50 dark:border-blue-900/30",
     activeBg:
-      "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-500/20 border-blue-600",
+      "bg-linear-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-500/20 border-blue-600",
   },
   cartas: {
     label: "Cartas",
@@ -75,7 +74,7 @@ const ACTIVITY_CONFIG: Record<
     text: "text-amber-700 dark:text-amber-300",
     border: "border-amber-200/50 dark:border-amber-900/30",
     activeBg:
-      "bg-gradient-to-r from-amber-500 to-amber-400 text-white shadow-md shadow-amber-500/20 border-amber-500",
+      "bg-linear-to-r from-amber-500 to-amber-400 text-white shadow-md shadow-amber-500/20 border-amber-500",
   },
   "testemunho informal": {
     label: "Informal",
@@ -84,7 +83,7 @@ const ACTIVITY_CONFIG: Record<
     text: "text-teal-700 dark:text-teal-300",
     border: "border-teal-200/50 dark:border-teal-900/30",
     activeBg:
-      "bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-md shadow-teal-500/20 border-teal-600",
+      "bg-linear-to-r from-teal-600 to-teal-500 text-white shadow-md shadow-teal-500/20 border-teal-600",
   },
   carrinho: {
     label: "Carrinho",
@@ -93,7 +92,7 @@ const ACTIVITY_CONFIG: Record<
     text: "text-indigo-700 dark:text-indigo-300",
     border: "border-indigo-200/50 dark:border-indigo-900/30",
     activeBg:
-      "bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-md shadow-indigo-500/20 border-indigo-600",
+      "bg-linear-to-r from-indigo-600 to-indigo-500 text-white shadow-md shadow-indigo-500/20 border-indigo-600",
   },
   revisita: {
     label: "Revisita",
@@ -102,7 +101,7 @@ const ACTIVITY_CONFIG: Record<
     text: "text-rose-700 dark:text-rose-300",
     border: "border-rose-200/50 dark:border-rose-900/30",
     activeBg:
-      "bg-gradient-to-r from-rose-600 to-rose-500 text-white shadow-md shadow-rose-500/20 border-rose-600",
+      "bg-linear-to-r from-rose-600 to-rose-500 text-white shadow-md shadow-rose-500/20 border-rose-600",
   },
   estudo: {
     label: "Estudo",
@@ -111,7 +110,7 @@ const ACTIVITY_CONFIG: Record<
     text: "text-emerald-700 dark:text-emerald-300",
     border: "border-emerald-200/50 dark:border-emerald-900/30",
     activeBg:
-      "bg-gradient-to-r from-emerald-600 to-emerald-500 text-white shadow-md shadow-emerald-500/20 border-emerald-600",
+      "bg-linear-to-r from-emerald-600 to-emerald-500 text-white shadow-md shadow-emerald-500/20 border-emerald-600",
   },
 };
 
@@ -205,18 +204,17 @@ export function DashboardPage() {
   const currentTypeConfig = ACTIVITY_CONFIG[activityType];
 
   return (
-    <AppShell>
-      <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-in">
         {/* Banner Header */}
-        <div className="overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-slate-950 via-slate-800 to-orange-500 p-6 sm:p-8 text-white shadow-2xl shadow-black/20">
+        <div className="overflow-hidden rounded-[2.5rem] bg-linear-to-br from-slate-950 via-slate-800 to-orange-500 p-6 sm:p-8 text-white shadow-2xl shadow-black/20">
           <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="max-w-xl">
               <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-100">
-                <span className="flex h-2 w-2 rounded-full bg-emerald-300 animate-pulse" />
+                <span className="flex size-2 animate-pulse rounded-full bg-emerald-300" />
                 Painel do Pioneiro
               </div>
               <h1 className="mt-4 text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">
-                {greeting}, Pioneiro! 👋
+                {greeting}, {data.profileName || "Pioneiro"}! 👋
               </h1>
               <p className="mt-3 text-sm text-amber-50/95 max-w-md leading-relaxed">
                 Acompanhe seu serviço de campo, organize lançamentos e gerencie
@@ -263,7 +261,7 @@ export function DashboardPage() {
 
             {/* SVG Ring */}
             <div className="relative flex items-center justify-center size-24 shrink-0">
-              <svg className="w-full h-full transform -rotate-90">
+              <svg className="size-full -rotate-90">
                 <circle
                   cx="48"
                   cy="48"
@@ -569,7 +567,7 @@ export function DashboardPage() {
                       onClick={() => {
                         const n = Number(hours);
                         if (!date || Number.isNaN(n) || n <= 0) return;
-                        window.localStorage.setItem(
+                        window.sessionStorage.setItem(
                           ENTRY_DRAFT_KEY,
                           JSON.stringify({
                             date,
@@ -593,7 +591,7 @@ export function DashboardPage() {
               <Button
                 type="button"
                 className="w-full h-11 text-sm font-bold"
-                onClick={() => {
+                onClick={async () => {
                   const n = Number(hours);
                   if (!date || !activityType || Number.isNaN(n) || n <= 0)
                     return;
@@ -602,7 +600,7 @@ export function DashboardPage() {
                       (c) => c.type === activityType,
                     );
                     if (available.length === 0 || !selectedContactId) {
-                      window.localStorage.setItem(
+                      window.sessionStorage.setItem(
                         ENTRY_DRAFT_KEY,
                         JSON.stringify({
                           date,
@@ -613,19 +611,27 @@ export function DashboardPage() {
                       router.push(`/follow-up?type=${activityType}`);
                       return;
                     }
-                    data.addEntry({
-                      date,
-                      activityType,
-                      hours: n,
-                      details: "",
-                      contactId: selectedContactId,
-                    });
-                    setHours("");
-                    setSelectedContactId("");
+                    try {
+                      await data.addEntry({
+                        date,
+                        activityType,
+                        hours: n,
+                        details: "",
+                        contactId: selectedContactId,
+                      });
+                      setHours("");
+                      setSelectedContactId("");
+                    } catch {
+                      // O provider apresenta a mensagem de erro.
+                    }
                     return;
                   }
-                  data.addEntry({ date, activityType, hours: n, details: "" });
-                  setHours("");
+                  try {
+                    await data.addEntry({ date, activityType, hours: n, details: "" });
+                    setHours("");
+                  } catch {
+                    // O provider apresenta a mensagem de erro.
+                  }
                 }}
               >
                 <CheckCircle className="size-4" />
@@ -755,7 +761,7 @@ export function DashboardPage() {
                                   )}
                                 </div>
                                 {e.contactId && (
-                                  <div className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate max-w-[200px] sm:max-w-xs">
+                                  <div className="mt-0.5 max-w-50 truncate text-xs text-zinc-500 sm:max-w-xs dark:text-zinc-400">
                                     Pessoa:{" "}
                                     <span className="font-semibold text-zinc-700 dark:text-zinc-300">
                                       {data.contacts.find(
@@ -792,7 +798,7 @@ export function DashboardPage() {
                                     const ok = window.confirm(
                                       "Deseja mesmo excluir este registro?",
                                     );
-                                    if (ok) data.deleteEntry(e.id);
+                                    if (ok) void data.deleteEntry(e.id).catch(() => undefined);
                                   }}
                                   title="Excluir Registro"
                                 >
@@ -809,8 +815,10 @@ export function DashboardPage() {
                                 contacts={data.contacts}
                                 onCancel={() => setEditingId(null)}
                                 onSave={(patch) => {
-                                  data.updateEntry(e.id, patch);
-                                  setEditingId(null);
+                                  void data
+                                    .updateEntry(e.id, patch)
+                                    .then(() => setEditingId(null))
+                                    .catch(() => undefined);
                                 }}
                               />
                             </div>
@@ -824,7 +832,6 @@ export function DashboardPage() {
             </div>
           )}
         </div>
-      </div>
-    </AppShell>
+    </div>
   );
 }

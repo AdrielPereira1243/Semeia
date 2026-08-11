@@ -92,30 +92,4 @@ const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
 );
 TabsTrigger.displayName = "TabsTrigger";
 
-type TabsContentProps = React.HTMLAttributes<HTMLDivElement> & {
-  value: string;
-};
-
-const TabsContent = React.forwardRef<HTMLDivElement, TabsContentProps>(
-  ({ className, value, ...props }, ref) => {
-    const ctx = React.useContext(TabsContext);
-    const active = ctx?.value === value;
-
-    if (!active) return null;
-
-    return (
-      <div
-        ref={ref}
-        role="tabpanel"
-        className={cn(
-          "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-          className,
-        )}
-        {...props}
-      />
-    );
-  },
-);
-TabsContent.displayName = "TabsContent";
-
-export { Tabs, TabsList, TabsTrigger, TabsContent };
+export { Tabs, TabsList, TabsTrigger };

@@ -1,10 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { AppShell } from "../../../_components/AppShell";
 import type { ContactType } from "../model";
 import { usePlannerData } from "../usePlannerData";
-import { ContactEditor } from "../components";
+import { ContactEditor } from "../components/EntryEditors";
 import {
   Card,
   CardContent,
@@ -49,8 +48,7 @@ export function ContactsPage() {
   }, [data.entries]);
 
   return (
-    <AppShell>
-      <div className="grid gap-6">
+    <div className="grid gap-6">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Pessoas</h1>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -126,7 +124,7 @@ export function ContactsPage() {
                               : `Remover este ${filter}?`
                           );
                           if (!ok) return;
-                          data.deleteContact(c.id);
+                          void data.deleteContact(c.id).catch(() => undefined);
                           if (editingId === c.id) setEditingId(null);
                         }}
                         title="Remover Contato"
@@ -148,8 +146,10 @@ export function ContactsPage() {
                         contact={c}
                         onCancel={() => setEditingId(null)}
                         onSave={(patch) => {
-                          data.updateContact(c.id, patch);
-                          setEditingId(null);
+                          void data
+                            .updateContact(c.id, patch)
+                            .then(() => setEditingId(null))
+                            .catch(() => undefined);
                         }}
                       />
                     </div>
@@ -159,7 +159,6 @@ export function ContactsPage() {
             ))
           )}
         </div>
-      </div>
-    </AppShell>
+    </div>
   );
 }

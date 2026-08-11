@@ -19,14 +19,14 @@ O projeto foi construído utilizando um ecossistema moderno focado em performanc
 - **[Next.js](https://nextjs.org/)** (App Router)
 - **[React 19](https://react.dev/)**
 - **[Tailwind CSS v4](https://tailwindcss.com/)** para estilização rápida e responsiva
-- **[sql.js](https://github.com/sql-js/sql.js)** para gerenciamento de banco de dados SQLite diretamente no navegador/ambiente local
+- **[Supabase](https://supabase.com/)** para autenticação e banco de dados PostgreSQL
 - **[TypeScript](https://www.typescriptlang.org/)** para maior segurança no código
 
 ## 🛠️ Como Executar o Projeto
 
 ### Pré-requisitos
 
-Certifique-se de ter o [Node.js](https://nodejs.org/) (versão 18+) instalado na sua máquina.
+Certifique-se de ter o [Node.js](https://nodejs.org/) (versão 22+) instalado na sua máquina.
 
 ### Passos de Instalação
 
@@ -41,7 +41,29 @@ yarn install
 pnpm install
 ```
 
-3. Inicie o servidor de desenvolvimento:
+3. Crie um projeto no Supabase e copie o arquivo de exemplo de ambiente:
+
+```bash
+cp .env.example .env.local
+```
+
+Preencha `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+com os valores exibidos em **Connect** no painel do projeto. Nunca use uma chave
+`service_role` no navegador.
+
+4. Aplique a migration existente em `supabase/migrations` ao projeto.
+
+5. Em **Authentication > URL Configuration**, configure a URL do site e adicione
+`http://localhost:3000/auth/confirm` às URLs de redirecionamento durante o desenvolvimento.
+
+Em **Authentication > Email Templates > Confirm signup**, use este link para o
+fluxo SSR de confirmação:
+
+```html
+{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next=/
+```
+
+6. Inicie o servidor de desenvolvimento:
 
 ```bash
 npm run dev
@@ -49,16 +71,18 @@ npm run dev
 yarn dev
 ```
 
-4. Abra [http://localhost:3000](http://localhost:3000) no seu navegador para ver a aplicação em funcionamento.
+7. Abra [http://localhost:3000](http://localhost:3000) no navegador.
 
 ## 📂 Estrutura do Projeto
 
-A arquitetura do projeto segue o padrão App Router do Next.js e está dividida em módulos lógicos (`_features`, `_components`, `_lib`):
+A arquitetura segue o App Router do Next.js e separa rotas, domínio e infraestrutura:
 
-- `/app`: Páginas da aplicação e layouts principais (`/contacts`, `/history`, `/settings`, etc.).
-- `/app/_components`: Componentes visuais reutilizáveis em toda a aplicação (como a `AppShell`).
-- `/app/_features`: Regras de negócio e componentes específicos de cada domínio da aplicação (como o `planner`).
-- `/app/_lib`: Código de infraestrutura, incluindo conexão com banco de dados (`sqliteClient`).
+- `/app/(planner)`: rotas autenticadas e layout compartilhado, sem alterar as URLs públicas.
+- `/app/login` e `/app/auth`: entrada, cadastro, confirmação de e-mail e logout.
+- `/app/_features/planner`: regras, estado e componentes específicos do relatório.
+- `/components/ui`: componentes visuais reutilizáveis.
+- `/lib/supabase`: clientes de navegador/servidor, tipos e renovação da sessão.
+- `/supabase/migrations`: schema PostgreSQL, índices, permissões e políticas RLS.
 
 ---
 *Feito para registrar horas mensais de forma simples e eficiente.*

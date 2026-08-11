@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo } from "react";
-import { AppShell } from "../../../_components/AppShell";
 import { formatHours, formatMonthLabel, PIONEER_GOALS } from "../model";
 import { usePlannerData } from "../usePlannerData";
 import { Card } from "@/components/ui/card";
@@ -29,8 +28,7 @@ export function MonthlyHistoryPage() {
   }, [data.entries, data.pioneerType]);
 
   return (
-    <AppShell>
-      <div className="grid gap-6">
+    <div className="grid gap-6">
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50">
             Histórico Mensal
@@ -84,7 +82,6 @@ export function MonthlyHistoryPage() {
             })
           )}
         </div>
-      </div>
-    </AppShell>
+    </div>
   );
 }

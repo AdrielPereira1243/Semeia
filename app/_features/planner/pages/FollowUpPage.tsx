@@ -1,10 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { AppShell } from "../../../_components/AppShell";
 import { ENTRY_DRAFT_KEY, isContactType } from "../model";
-import type { ActivityType, ContactType } from "../model";
+import type { ContactType } from "../model";
 import { formatHours } from "../model";
 import { usePlannerData } from "../usePlannerData";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,26 +24,49 @@ export function FollowUpPage() {
     ? queryType
     : "revisita";
 
-  const draft = useMemo(() => {
-    const raw = window.localStorage.getItem(ENTRY_DRAFT_KEY);
-    if (!raw) return null;
-    try {
-      const parsed = JSON.parse(raw) as {
-        date: string;
-        hours: number;
-        activityType: ActivityType;
-        details?: string;
-      };
-      if (!parsed?.date || !parsed?.hours || !parsed?.activityType) return null;
-      return parsed;
-    } catch {
-      return null;
-    }
-  }, []);
-
+  const [draft, setDraft] = useState<{
+    date: string;
+    hours: number;
+    details?: string;
+  } | null>(null);
   const [personName, setPersonName] = useState("");
   const [address, setAddress] = useState("");
   const [subject, setSubject] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    const raw = window.sessionStorage.getItem(ENTRY_DRAFT_KEY);
+    if (!raw) return;
+
+    try {
+      const parsed = JSON.parse(raw) as {
+        date?: unknown;
+        hours?: unknown;
+        activityType?: unknown;
+        details?: unknown;
+      };
+      if (
+        typeof parsed.date === "string" &&
+        typeof parsed.hours === "number" &&
+        Number.isFinite(parsed.hours) &&
+        parsed.hours > 0 &&
+        parsed.hours <= 24 &&
+        parsed.activityType === contactType &&
+        (parsed.details === undefined || typeof parsed.details === "string")
+      ) {
+        setDraft({
+          date: parsed.date,
+          hours: parsed.hours,
+          details: parsed.details,
+        });
+        return;
+      }
+    } catch {
+      // O rascunho inválido será descartado abaixo.
+    }
+
+    window.sessionStorage.removeItem(ENTRY_DRAFT_KEY);
+  }, [contactType]);
 
   const canSave =
     personName.trim().length > 0 ||
@@ -52,8 +74,7 @@ export function FollowUpPage() {
     subject.trim().length > 0;
 
   return (
-    <AppShell>
-      <div className="mx-auto grid w-full max-w-2xl gap-6">
+    <div className="mx-auto grid w-full max-w-2xl gap-6">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight">
@@ -131,47 +152,42 @@ export function FollowUpPage() {
               </Button>
               <Button
                 type="button"
-                disabled={!canSave}
-                onClick={() => {
-                  const id = data.addContact({
-                    type: contactType,
-                    personName,
-                    address,
-                    subject,
-                  });
+                disabled={!canSave || saving}
+                onClick={async () => {
+                  setSaving(true);
+                  try {
+                    const id = await data.addContact({
+                      type: contactType,
+                      personName,
+                      address,
+                      subject,
+                    });
 
-                  const raw = window.localStorage.getItem(ENTRY_DRAFT_KEY);
-                  if (raw) {
-                    try {
-                      const parsed = JSON.parse(raw) as {
-                        date: string;
-                        hours: number;
-                        activityType: ActivityType;
-                        details?: string;
-                      };
-                      data.addEntry({
-                        date: parsed.date,
-                        hours: parsed.hours,
+                    if (draft) {
+                      await data.addEntry({
+                        date: draft.date,
+                        hours: draft.hours,
                         activityType: contactType,
-                        details: parsed.details ?? "",
+                        details: draft.details ?? "",
                         contactId: id,
                       });
-                      window.localStorage.removeItem(ENTRY_DRAFT_KEY);
-                    } catch {
-                      // ignore
+                      window.sessionStorage.removeItem(ENTRY_DRAFT_KEY);
                     }
-                  }
 
-                  router.push("/");
+                    router.push("/");
+                  } catch {
+                    // O provider apresenta a mensagem de erro.
+                  } finally {
+                    setSaving(false);
+                  }
                 }}
                 className="gap-2"
               >
-                <Save className="size-4" /> Salvar {contactType}
+                <Save className="size-4" /> {saving ? "Salvando..." : `Salvar ${contactType}`}
               </Button>
             </div>
           </CardContent>
         </Card>
-      </div>
-    </AppShell>
+    </div>
   );
 }

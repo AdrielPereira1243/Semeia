@@ -1,6 +1,5 @@
 "use client";
 
-import { AppShell } from "../../../_components/AppShell";
 import { PIONEER_GOALS, type PioneerType, formatHours } from "../model";
 import { usePlannerData } from "../usePlannerData";
 import {
@@ -24,8 +23,7 @@ export function SettingsPage() {
   const data = usePlannerData();
 
   return (
-    <AppShell>
-      <div className="grid max-w-2xl gap-6">
+    <div className="grid max-w-2xl gap-6">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Configuracoes</h1>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -45,7 +43,9 @@ export function SettingsPage() {
           <CardContent className="space-y-4">
             <Select
               value={data.pioneerType}
-              onValueChange={(value) => data.setPioneerType(value as PioneerType)}
+              onValueChange={(value) =>
+                void data.setPioneerType(value as PioneerType).catch(() => undefined)
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione" />
@@ -77,10 +77,10 @@ export function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <HardDrive className="size-4" /> Dados Locais
+              <HardDrive className="size-4" /> Dados da Conta
             </CardTitle>
             <CardDescription>
-              Seus dados ficam salvos no navegador deste dispositivo.
+              Seus registros ficam sincronizados com sua conta no Supabase.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -91,7 +91,7 @@ export function SettingsPage() {
                   "Tem certeza? Esta acao vai deletar todos os seus dados."
                 );
                 if (ok) {
-                  data.clearAll();
+                  void data.clearAll().catch(() => undefined);
                 }
               }}
               className="gap-2"
@@ -116,7 +116,6 @@ export function SettingsPage() {
             </p>
           </CardContent>
         </Card>
-      </div>
-    </AppShell>
+    </div>
   );
 }

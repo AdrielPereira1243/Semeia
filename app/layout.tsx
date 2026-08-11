@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Service Report",
-  description: "Relatorio mensal de horas e planejamento",
+  description: "Relatório mensal de horas e planejamento",
 };
 
 export default function RootLayout({
