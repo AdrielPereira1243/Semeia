@@ -126,3 +126,24 @@ input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+@keyframes auth-mode-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-mode-enter {
+  animation: auth-mode-enter 240ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-mode-enter {
+    animation: none;
+  }
+}

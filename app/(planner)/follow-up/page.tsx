@@ -4,7 +4,7 @@ import { FollowUpPage } from "@/app/_features/planner/pages/FollowUpPage";
 
 export const metadata: Metadata = {
   title: "Cadastro de Revisita",
-  description: "Cadastre revisitas e estudos vinculados aos lançamentos do Service Report.",
+  description: "Cadastre revisitas e estudos vinculados aos lançamentos do Semeia.",
 };
 
 export default function FollowUpRoute() {

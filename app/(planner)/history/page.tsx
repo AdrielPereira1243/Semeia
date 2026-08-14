@@ -3,7 +3,7 @@ import { MonthlyHistoryPage } from "@/app/_features/planner/pages/MonthlyHistory
 
 export const metadata: Metadata = {
   title: "Histórico Mensal",
-  description: "Veja o histórico mensal de horas, progresso e metas do Service Report.",
+  description: "Veja o histórico mensal de horas, progresso e metas do Semeia.",
 };
 
 export default function HistoryRoute() {

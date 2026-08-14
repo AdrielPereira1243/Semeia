@@ -20,7 +20,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
             <div className="leading-tight">
               <div className="text-sm font-semibold tracking-tight text-foreground">
-                Service Report
+                Semeia
               </div>
               <div className="text-xs text-muted-foreground">
                 {profileName ? `Olá, ${profileName}` : "Gerenciador de horas"}

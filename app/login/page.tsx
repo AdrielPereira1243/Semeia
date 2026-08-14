@@ -3,7 +3,7 @@ import { AuthForm } from "./AuthForm";
 
 export const metadata: Metadata = {
   title: "Entrar ou criar conta",
-  description: "Acesse sua conta do Service Report.",
+  description: "Acesse sua conta do Semeia.",
 };
 
 export default function LoginPage() {

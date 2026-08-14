@@ -1,6 +1,6 @@
-# Service Report 📊
+# Semeia 📊
 
-**Service Report** (Relatório de Serviço de Campo) é uma aplicação web moderna projetada para facilitar o registro e o acompanhamento de horas mensais, visitas e contatos. 
+**Semeia** é uma aplicação web moderna projetada para facilitar o registro e o acompanhamento de horas mensais, visitas e contatos. 
 
 Um sistema de produtividade pessoal construído para ajudar a organizar suas atividades e manter seu histórico seguro, e sempre a mão.
 

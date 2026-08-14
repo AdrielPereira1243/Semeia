@@ -107,7 +107,7 @@ export function SettingsPage() {
               <Info className="size-4" /> Sobre o Aplicativo
             </CardTitle>
             <CardDescription>
-              Service Report - Gerenciador moderno de horas de atividades
+              Semeia - Gerenciador moderno de horas de atividades
             </CardDescription>
           </CardHeader>
           <CardContent>
