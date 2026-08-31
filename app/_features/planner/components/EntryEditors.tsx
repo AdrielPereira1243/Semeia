@@ -2,7 +2,12 @@
 
 import { useMemo, useState } from "react";
 import type { ActivityType, Contact, Entry } from "../model";
-import { ACTIVITY_TYPES, isContactActivity } from "../model";
+import {
+  ACTIVITY_TYPES,
+  formatClockInput,
+  isContactActivity,
+  parseClockHours,
+} from "../model";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,7 +28,7 @@ export function EditEntryForm({
 }) {
   const [date, setDate] = useState(entry.date);
   const [activityType, setActivityType] = useState<ActivityType>(entry.activityType);
-  const [hours, setHours] = useState(String(entry.hours));
+  const [hours, setHours] = useState(formatClockInput(entry.hours));
   const [details, setDetails] = useState(entry.details);
   const [selectedContactId, setSelectedContactId] = useState(entry.contactId ?? "");
 
@@ -72,9 +77,16 @@ export function EditEntryForm({
           <Input
             type="number"
             min="0"
-            step="0.5"
+            max="24"
+            step="0.01"
             value={hours}
             onChange={(e) => setHours(e.target.value)}
+            onBlur={() => {
+              const parsedHours = parseClockHours(hours);
+              if (parsedHours !== null) {
+                setHours(formatClockInput(parsedHours));
+              }
+            }}
             className="h-9 text-xs"
           />
         </div>
@@ -119,8 +131,8 @@ export function EditEntryForm({
         <Button
           size="sm"
           onClick={() => {
-            const n = Number(hours);
-            if (!date || Number.isNaN(n) || n <= 0) return;
+            const n = parseClockHours(hours);
+            if (!date || n === null) return;
             onSave({
               date,
               activityType,

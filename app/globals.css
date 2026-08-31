@@ -1,49 +1,60 @@
 @import "tailwindcss";
 
-:root {
-  --background: hsl(34 28% 90%);
-  --foreground: hsl(214 16% 20%);
-  --card: hsl(45 32% 94%);
-  --card-foreground: hsl(216 16% 20%);
-  --popover: hsl(45 95% 96%);
-  --popover-foreground: hsl(216 16% 20%);
-  --primary: hsl(18 74% 52%);
-  --primary-foreground: hsl(0 0% 100%);
-  --secondary: hsl(30 80% 70%);
-  --secondary-foreground: hsl(216 16% 20%);
-  --muted: hsl(38 16% 88%);
-  --muted-foreground: hsl(216 18% 48%);
-  --accent: hsl(24 82% 59%);
-  --accent-foreground: hsl(0 0% 100%);
-  --destructive: hsl(358 80% 58%);
-  --destructive-foreground: hsl(0 0% 100%);
-  --border: hsl(34 18% 76%);
-  --input: hsl(45 100% 95%);
-  --ring: hsl(24 90% 60%);
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+  --background: #f3ede4;
+  --foreground: #302a26;
+  --card: #faf4ea;
+  --card-foreground: #302a26;
+  --popover: #fff8ee;
+  --popover-foreground: #302a26;
+  --primary: #c54b12;
+  --primary-hover: #a93c08;
+  --primary-foreground: #fff8ee;
+  --secondary: #f2a52b;
+  --secondary-hover: #dc8715;
+  --secondary-foreground: #302a26;
+  --muted: #e9ded0;
+  --muted-foreground: #71645b;
+  --accent: #e9701c;
+  --accent-hover: #cf5610;
+  --accent-foreground: #302a26;
+  --destructive: #b54848;
+  --destructive-foreground: #fff8ee;
+  --border: #d8c9b8;
+  --input: #f6efe5;
+  --ring: #d95b18;
   --app-font-sans: ui-sans-serif, system-ui, sans-serif;
   --app-font-mono: ui-monospace, SFMono-Regular, monospace;
 }
 
-.dark {
+[data-theme="dark"] {
+  color-scheme: dark;
   --background: hsl(217 18% 12%);
-  --foreground: hsl(0 0% 97%);
+  --foreground: #faf7f2;
   --card: hsl(217 25% 17%);
-  --card-foreground: hsl(0 0% 97%);
+  --card-foreground: #faf7f2;
   --popover: hsl(217 25% 17%);
-  --popover-foreground: hsl(0 0% 97%);
-  --primary: hsl(24 95% 63%);
+  --popover-foreground: #faf7f2;
+  --primary: #ff7a2f;
+  --primary-hover: #e8661c;
   --primary-foreground: hsl(217 18% 12%);
-  --secondary: hsl(38 90% 52%);
-  --secondary-foreground: hsl(217 18% 96%);
+  --secondary: #f6b73c;
+  --secondary-hover: #dd991f;
+  --secondary-foreground: hsl(217 18% 12%);
   --muted: hsl(217 17% 18%);
   --muted-foreground: hsl(210 15% 70%);
-  --accent: hsl(20 92% 60%);
+  --accent: #ff8a3d;
+  --accent-hover: #ec6f20;
   --accent-foreground: hsl(217 18% 12%);
   --destructive: hsl(359 80% 66%);
-  --destructive-foreground: hsl(0 0% 100%);
+  --destructive-foreground: #fff8ee;
   --border: hsl(217 18% 24%);
   --input: hsl(217 25% 14%);
-  --ring: hsl(22 92% 68%);
+  --ring: #ff9a5c;
 }
 
 @theme inline {
@@ -54,12 +65,15 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
@@ -75,19 +89,19 @@ body {
   background-image:
     radial-gradient(
       circle at top left,
-      hsla(44 100% 92% / 0.55),
+      rgb(255 248 238 / 0.72),
       transparent 26%
     ),
     radial-gradient(
       circle at bottom right,
-      hsla(20 100% 80% / 0.18),
+      rgb(215 106 69 / 0.12),
       transparent 26%
     );
   color: var(--foreground);
   font-family: var(--app-font-sans);
 }
 
-.dark body {
+[data-theme="dark"] body {
   background-image:
     radial-gradient(
       circle at top left,
@@ -103,7 +117,7 @@ body {
 
 input[type="date"],
 input[type="month"] {
-  accent-color: hsl(222.2 47.4% 11.2%);
+  accent-color: var(--primary);
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator,

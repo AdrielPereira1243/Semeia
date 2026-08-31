@@ -10,6 +10,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useTheme, type ThemePreference } from "@/components/theme-provider";
 import {
   Select,
   SelectContent,
@@ -17,10 +18,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { User, HardDrive, Info, Trash2 } from "lucide-react";
+import { User, HardDrive, Info, Monitor, Palette, Trash2 } from "lucide-react";
 
 export function SettingsPage() {
   const data = usePlannerData();
+  const { theme, setTheme } = useTheme();
 
   return (
     <div className="grid max-w-2xl gap-6">
@@ -70,6 +72,37 @@ export function SettingsPage() {
                 {formatHours(PIONEER_GOALS[data.pioneerType])}
               </span>{" "}
               por mes
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Palette className="size-4" /> Aparência
+            </CardTitle>
+            <CardDescription>
+              Escolha o tema da interface ou acompanhe a preferência do dispositivo.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Select
+              value={theme}
+              onValueChange={(value) => setTheme(value as ThemePreference)}
+            >
+              <SelectTrigger aria-label="Tema da interface">
+                <SelectValue placeholder="Selecione o tema" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="system">Sistema</SelectItem>
+                <SelectItem value="light">Claro</SelectItem>
+                <SelectItem value="dark">Escuro</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <p className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Monitor className="size-4 shrink-0" />
+              No modo Sistema, o tema acompanha automaticamente o seu dispositivo.
             </p>
           </CardContent>
         </Card>

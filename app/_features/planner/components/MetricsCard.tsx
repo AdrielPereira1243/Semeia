@@ -29,16 +29,16 @@ export function MetricsCard({
                 {icon}
               </div>
             )}
-            <h3 className="text-xs font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
+            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
               {title}
             </h3>
           </div>
-          <div className={cn("text-2xl sm:text-3xl font-extrabold text-zinc-900 dark:text-white mt-1", statusClass)}>
+          <div className={cn("mt-1 text-2xl font-extrabold text-foreground sm:text-3xl", statusClass)}>
             {value}
           </div>
         </div>
         {description && (
-          <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400 truncate font-medium">
+          <p className="mt-3 truncate text-xs font-medium text-muted-foreground">
             {description}
           </p>
         )}

@@ -64,8 +64,65 @@ export function getCurrentMonth() {
   return toLocalIsoDate(new Date()).slice(0, 7);
 }
 
-export function formatHours(v: number) {
-  return `${v.toFixed(1)}h`;
+export function getServiceYearPeriod(date = new Date()) {
+  const currentYear = date.getFullYear();
+  const startYear = date.getMonth() >= 8 ? currentYear : currentYear - 1;
+  const serviceYear = startYear + 1;
+  const start = `${startYear}-09-01`;
+  const endExclusive = `${serviceYear}-09-01`;
+  const dayInMs = 24 * 60 * 60 * 1000;
+  const startUtc = Date.UTC(startYear, 8, 1);
+  const endUtc = Date.UTC(serviceYear, 8, 1);
+  const todayUtc = Date.UTC(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+  );
+  const totalDays = Math.round((endUtc - startUtc) / dayInMs);
+  const elapsedDays = Math.min(
+    totalDays,
+    Math.max(0, Math.floor((todayUtc - startUtc) / dayInMs) + 1),
+  );
+
+  return { serviceYear, start, endExclusive, elapsedDays, totalDays };
+}
+
+export function formatHours(value: number) {
+  const totalMinutes = Math.max(0, Math.round(value * 60));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  if (minutes === 0) return `${hours}h`;
+  if (hours === 0) return `${minutes}min`;
+  return `${hours}h ${minutes}min`;
+}
+
+export function parseClockHours(value: string) {
+  const match = value
+    .trim()
+    .replace(",", ".")
+    .match(/^(\d{1,2})(?:\.(\d{1,2}))?$/);
+  if (!match) return null;
+
+  const hours = Number(match[1]);
+  const minuteDigits = match[2] ?? "0";
+  const minutes = Number(minuteDigits.length === 1 ? `${minuteDigits}0` : minuteDigits);
+  const totalMinutes = hours * 60 + minutes;
+
+  if (totalMinutes <= 0 || totalMinutes > 24 * 60) return null;
+  return totalMinutes / 60;
+}
+
+export function formatClockInput(value: number) {
+  const totalMinutes = Math.max(0, Math.round(value * 60));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return `${hours}.${String(minutes).padStart(2, "0")}`;
+}
+
+export function addClockMinutes(value: string, minutesToAdd: number) {
+  const currentHours = parseClockHours(value) ?? 0;
+  return formatClockInput(currentHours + minutesToAdd / 60);
 }
 
 export function formatMonthLabel(month: string) {

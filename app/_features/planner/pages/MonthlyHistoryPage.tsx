@@ -30,17 +30,17 @@ export function MonthlyHistoryPage() {
   return (
     <div className="grid gap-6">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-50">
+          <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
             Histórico Mensal
           </h1>
-          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400 font-medium">
+          <p className="mt-1 text-sm font-medium text-muted-foreground">
             Veja o consolidado de cada mês com totais e status da meta
           </p>
         </div>
 
         <div className="grid gap-3">
           {monthlyRows.length === 0 ? (
-            <Card className="p-8 text-center text-sm text-zinc-500 dark:text-zinc-400 font-medium border-dashed">
+            <Card className="border-dashed p-8 text-center text-sm font-medium text-muted-foreground">
               Nenhum mês registrado ainda.
             </Card>
           ) : (
@@ -56,7 +56,7 @@ export function MonthlyHistoryPage() {
                   }`}
                 >
                   <div className="flex items-center justify-between gap-3 mb-3">
-                    <div className="font-extrabold text-lg text-zinc-900 dark:text-zinc-50">
+                    <div className="text-lg font-extrabold text-foreground">
                       {formatMonthLabel(row.month)}
                     </div>
                     <Badge variant={isCompleted ? "success" : "warning"} className="gap-1 px-3 py-1">
@@ -71,8 +71,8 @@ export function MonthlyHistoryPage() {
                       )}
                     </Badge>
                   </div>
-                  <div className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                    <span className="text-base font-extrabold text-zinc-900 dark:text-white">
+                  <div className="text-sm font-semibold text-foreground/80">
+                    <span className="text-base font-extrabold text-foreground">
                       {formatHours(row.total)}
                     </span>{" "}
                     / {formatHours(row.goal)}
