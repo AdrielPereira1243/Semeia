@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { toCsv, saveCsv } from "../csv";
+import { getWhatsAppReportUrl } from "../report";
 import {
   ACTIVITY_TYPES,
   PIONEER_GOALS,
@@ -42,7 +42,7 @@ import {
   ShoppingBag,
   RotateCcw,
   BookOpen,
-  FileSpreadsheet,
+  Share2,
   Edit2,
   Trash2,
   UserPlus,
@@ -707,7 +707,7 @@ export function DashboardPage() {
 
       {/* Registros do Mês */}
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="flex size-9 items-center justify-center rounded-xl bg-muted text-foreground/80">
               <CalendarIcon className="size-4" />
@@ -717,18 +717,21 @@ export function DashboardPage() {
             </h2>
           </div>
           <Button
+            type="button"
             variant="outline"
             size="sm"
+            disabled={data.loading || Boolean(data.error) || !month}
             onClick={() =>
-              saveCsv(
-                toCsv(monthEntries, data.contacts),
-                `servico-${month}.csv`,
+              window.open(
+                getWhatsAppReportUrl(month, monthEntries),
+                "_blank",
+                "noopener,noreferrer",
               )
             }
             className="gap-2 text-xs"
           >
-            <FileSpreadsheet className="size-4 text-indigo-500" />
-            Exportar CSV
+            <Share2 className="size-4 text-indigo-500" />
+            Compartilhar relatório
           </Button>
         </div>
 

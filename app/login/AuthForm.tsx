@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import {
   BarChart3,
@@ -18,6 +18,34 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type Mode = "login" | "signup";
+
+function authErrorMessage(error: unknown, mode: Mode) {
+  const code = typeof error === "object" && error !== null && "code" in error
+    ? error.code
+    : undefined;
+
+  switch (code) {
+    case "over_email_send_rate_limit":
+      return "Aguarde alguns minutos antes de tentar novamente. Confira também seu e-mail e a pasta de spam.";
+    case "over_request_rate_limit":
+      return "Muitas tentativas. Aguarde alguns minutos e tente novamente.";
+    case "email_exists":
+    case "user_already_exists":
+      return "Este e-mail já está cadastrado. Tente entrar na sua conta.";
+    case "email_not_confirmed":
+      return "Confirme seu e-mail antes de entrar. Confira também a pasta de spam.";
+    case "invalid_credentials":
+      return "E-mail ou senha incorretos.";
+    case "email_address_invalid":
+      return "Informe um e-mail válido.";
+    case "weak_password":
+      return "Escolha uma senha mais forte, com letras, números e símbolos.";
+    default:
+      return mode === "signup"
+        ? "Não foi possível criar sua conta. Tente novamente em instantes."
+        : "Não foi possível entrar. Tente novamente em instantes.";
+  }
+}
 
 const welcomeCopy = {
   login: {
@@ -43,10 +71,12 @@ export function AuthForm() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const submitting = useRef(false);
 
   const copy = welcomeCopy[mode];
 
   function handleModeChange(value: string) {
+    if (submitting.current) return;
     setMode(value as Mode);
     setMessage(null);
     setError(null);
@@ -54,6 +84,7 @@ export function AuthForm() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (submitting.current || (mode === "signup" && message)) return;
     setMessage(null);
     setError(null);
 
@@ -70,6 +101,7 @@ export function AuthForm() {
       return;
     }
 
+    submitting.current = true;
     setLoading(true);
     try {
       const supabase = createClient();
@@ -88,7 +120,8 @@ export function AuthForm() {
         if (signUpError) throw signUpError;
 
         if (!data.session) {
-          setMessage("Conta criada. Confira seu e-mail para confirmar o cadastro.");
+          setMessage("Enviamos um e-mail de confirmação. Clique no link recebido para concluir seu cadastro.");
+          setPassword("");
           return;
         }
       } else {
@@ -102,8 +135,9 @@ export function AuthForm() {
       router.replace("/");
       router.refresh();
     } catch (authError) {
-      setError(authError instanceof Error ? authError.message : "Nao foi possivel autenticar.");
+      setError(authErrorMessage(authError, mode));
     } finally {
+      submitting.current = false;
       setLoading(false);
     }
   }
@@ -199,7 +233,17 @@ export function AuthForm() {
             </TabsList>
           </Tabs>
 
-          <form className="grid gap-4" onSubmit={handleSubmit}>
+          {message ? (
+            <div role="status" aria-live="polite" className="grid gap-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-5">
+              <Check aria-hidden="true" className="size-8 text-emerald-700 dark:text-emerald-400" />
+              <p className="text-sm font-medium leading-6 text-foreground">{message}</p>
+              <p className="text-xs text-muted-foreground">Se não encontrar, confira a pasta de spam.</p>
+              <Button type="button" variant="outline" onClick={() => handleModeChange("login")}>
+                Voltar para entrar
+              </Button>
+            </div>
+          ) : (
+          <form className="grid gap-4" onSubmit={handleSubmit} aria-busy={loading}>
             <div key={mode} className="auth-mode-enter grid gap-4">
               {mode === "signup" && (
                 <div className="grid gap-2">
@@ -259,18 +303,12 @@ export function AuthForm() {
                 {error}
               </p>
             )}
-            {message && (
-              <p role="status" className="flex items-start gap-2 rounded-xl bg-emerald-500/10 px-3 py-2 text-sm text-emerald-400">
-                <Check className="mt-0.5 size-4 shrink-0" />
-                {message}
-              </p>
-            )}
-
             <Button type="submit" disabled={loading} className="mt-2 h-12 w-full gap-2">
               {loading && <Loader2 className="size-4 animate-spin" />}
               {loading ? "Aguarde..." : mode === "login" ? "Entrar na minha conta" : "Criar minha conta"}
             </Button>
           </form>
+          )}
         </section>
       </Card>
     </main>
