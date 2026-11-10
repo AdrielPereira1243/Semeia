@@ -79,7 +79,10 @@ export function AuthForm() {
           password,
           options: {
             data: { name: name.trim() },
-            emailRedirectTo: `${window.location.origin}/auth/confirm?next=/`,
+            emailRedirectTo: new URL(
+              "/auth/confirm?next=%2F",
+              window.location.origin,
+            ).toString(),
           },
         });
         if (signUpError) throw signUpError;
